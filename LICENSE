@@ -225,7 +225,7 @@ License
 
 Attribution Notice:
 
-This project, `atscale-gatling`, is based on the open-source Gatling project (https://github.com/gatling/gatling), which is licensed under the Apache License, Version 2.0.
+This project, `atscale-gatling-core`, is based on the open-source Gatling project (https://github.com/gatling/gatling), which is licensed under the Apache License, Version 2.0.
 
 Copyright (c) 2025 AtScale, Inc. and contributors.
 
