@@ -1,8 +1,10 @@
+# atscale-gatling-core
+
 Overview
 
 Runs Gatling Tests. Project uses Maven to manage compilation, and testing.
 
-The core goal of this project is to fully automate the testing process by pulling queries from the AtScale database where each user query is logged.  These queries are typically generated via interactions with a BI tool which passes them to AtScale for execution.  Once we have retrieved the queries we automate running the queries before and after version upgrades to build confidence that the upgrade will go smoothly in customer environments.  This facilitates testing of the AtScale platform without having to invoke BI tooling.
+The primary goal of this project is to fully automate the testing process by pulling queries from the AtScale database where each user query is logged.  These queries are typically generated via interactions with a BI tool which passes them to AtScale for execution.  Once we have retrieved the queries we automate running the queries before and after version upgrades to build confidence that the upgrade will go smoothly in customer environments.  This facilitates testing of the AtScale platform without having to invoke BI tooling.
 
 This project was built using temurin-21 open jdk.  It provides Gatling tests for both the AtScale JDBC endpoint and the AtScale XMLA endpoint. 
 JDBC leverages the gatling-jdbc-plugin.  XMLA is SOAP over HTTP.  HTTP requires no additional or special support as it is standard for Gatling.  For additional information on Gatling JDBC see: https://github.com/galax-io/gatling-jdbc-plugin/tree/main/src/test
