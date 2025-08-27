@@ -58,8 +58,9 @@ For details refer to the pom.xml file and look for:  <artifactId>exec-maven-plug
 
 If run successfully, there will be two files created in the directory /queries for each model defined in the atscale.models property
 
+Once we have extracted the queries we can run Gatling Scenario Simulations to execute the queries against the Atscale Engine.
 
-The easiest way to run Gatling tests is to create an Executor under src/main/com/atscale/java/executors.  The project includes open and closed step executors.  These classes run Gatling Simulations using open steps or closed steps.  Simulations can be run using one of the following commands:
+The easiest way to run Gatling Simulations is to create an Executor under src/main/com/atscale/java/executors.  The project includes open and closed step executors.  These classes run Gatling Simulations using open steps or closed steps.  Simulations can be run using one of the following commands:
 ```shell
  ./mvnw clean install exec:java@open-step-simulation-executor 
 ````
