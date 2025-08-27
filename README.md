@@ -2,14 +2,16 @@ Overview
 
 Runs Gatling Tests. Project uses Maven to manage compilation, and testing.
 
-The core goal of this project is to fully automate the testing process by pulling queries from the AtScale database where each query is logged.  Then to automate running those queries before and after version upgrades to build confidence that the upgrade will go smoothly in customer environments.
+The core goal of this project is to fully automate the testing process by pulling queries from the AtScale database where each user query is logged.  These queries are typically generated via interactions with a BI tool which passes them to AtScale for execution.  Once we have retrieved the queries we automate running the queries before and after version upgrades to build confidence that the upgrade will go smoothly in customer environments.  This facilitates testing of the AtScale platform without having to invoke BI tooling.
 
 This project was built using temurin-21 open jdk.  It provides Gatling tests for both the AtScale JDBC endpoint and the AtScale XMLA endpoint. 
-For additional information on Gatling JDBC see: https://github.com/galax-io/gatling-jdbc-plugin/tree/main/src/test
+JDBC leverages the gatling-jdbc-plugin.  XMLA is SOAP over HTTP.  HTTP requires no additional or special support as it is standard for Gatling.  For additional information on Gatling JDBC see: https://github.com/galax-io/gatling-jdbc-plugin/tree/main/src/test
 
-Gatling is generating an HTML formatted report, which can be found under: target/gatling.  In the report, Gatling test results are categorized as OK or KO with KO being the opposite of OK meaning not OK.
+Gatling generates HTML formatted reports, which can be found under: target/gatling.  In the reports, Gatling test results are categorized as OK or KO with KO being the opposite of OK meaning not OK.
 
-Prerequisites
+It's possible to run and extend this project.  However, we believe there is an easier path.   Our intent for this project is to build a jar that gets uploaded to Maven Central.  Then to use that jar in a far simpler project.  Refer to the https://github.com/AtScaleInc/atscale-gatling project for a much easier way to run Gatling tests against AtScale.
+
+Prerequisites should you choose to run this project:
 
 Add a properties file named system.properties to the src/test/resources directory modeled like the example_system.properties file in the same directory.  
 
@@ -71,43 +73,7 @@ or
  ./mvnw clean install exec:java -Dexec.mainClass="com.atscale.java.executors.OpenStepSimulationExecutor"
 ```
 
-SimulationExecutor can be extended to run custom Gatling simulations.  For example:
-
-```java
-package com.atscale.java.executors;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
-public class CustomSimulationExecutor extends OpenStepSimulationExecutor {
-
-    public static void main(String[] args) {
-        CustomSimulationExecutor executor = new CustomSimulationExecutor();
-        executor.execute();
-    }
-
-    @Override
-    protected List<MavenTaskDto> getSimulationTasks() {
-        // Custom execution logic can be added here
-        System.out.println("Executing custom simulation with task");
-
-        List<MavenTaskDto> tasks = new ArrayList<>();
-
-        MavenTaskDto task1 = new MavenTaskDto("XMLA Ten User Simulation");
-        tasks.add(task1);
-        task1.setMavenCommand("gatling:test");
-        task1.setSimulationClass("com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation");
-        task1.setRunDescription("Internet Sales XMLA Model Tests");
-        task1.addGatlingProperty("atscale.model", "internet_sales");
-
-        return tasks;
-    }
-}
-```
-Consider modification to the maven pom.xml file to add a new goal for the custom simulation executor.
-
-As the Executors are directly runnable they're also a good way to run a debugger to step through the code.
+Examples include ClosedStepSimulationExecutor and OpenStepSimulationExecutor.  These executors run Gatling simulations that use closed steps and open steps respectively.  The executors can be found under src/main/com/atscale/java/executors.  These are examples only.  They will have to be tailored to the models and data in your environment.
 
 Can clean, build and run an individual test as follows
 Java:
@@ -120,4 +86,16 @@ Scala:
 ```
 
 
-Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in Gatling simulation classes. It's assumed users of this utility will shape their tests by writing custom simulations and adding them to a SimulationExecutor. The Gatling documentation provides extensive information on how to use these capabilities.  See: https://gatling.io/docs/gatling/reference/current/general/simulation_structure/
+Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in Gatling simulation classes. This utility has abstracted those behaviors such that we can pass a list of injectionsteps to our desired simulation. Accordingly, users can shape their tests without writing custom Gatling simulations. Injection steps implement the factory design pattern to produce a standard Gatling open or closed injection step that is used in the simulation.  To better understand these injection steps refer to the Gatling documentation.  See: https://gatling.io/docs/gatling/reference/current/general/simulation_structure/     
+
+Defining open and closed injection steps in the same list is not supported.
+
+Passing Open Injection Steps to a Closed Injection Step Simulation is not supported.
+
+Passing Closed Injection Steps to an Open Injection Step Simulation is not supported.
+
+A few words on Gatling.  In a typical Gatling simulation, we begin with a set of test cases.  One more more cases are defined in a scenario.  A simulation combines a scenario, a protocol such as HTTP or JDBC and one or more injection steps to simulate some type of load over time on our system under test.
+
+![img.png](img.png)
+
+In this project we have abstracted the test cases by generating queries to run.  We have abstracted the scenarios by creating a standard scenario to run all queries for a given model.  We have abstracted the protocols by providing both JDBC and HTTP (XMLA) protocols. We have abstracted the simulations into 4 patterns.  Finally we abstracted the injection steps by providing a factory design pattern to create open or closed injection steps.  This allows users to shape their tests without having to write custom Gatling simulations.
