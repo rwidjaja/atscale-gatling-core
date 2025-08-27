@@ -85,7 +85,7 @@ Scala:
 ```
 
 
-Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in Gatling simulation classes. This utility has abstracted those behaviors such that we can pass a list of injectionsteps to our desired simulation. Accordingly, users can shape their tests without writing custom Gatling simulations. Injection steps implement the factory design pattern to produce a standard Gatling open or closed injection step that is used in the simulation.  To better understand these injection steps refer to the Gatling documentation.  See: https://docs.gatling.io/tutorials/scripting-intro/    
+Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in as InjectionSteps within Gatling simulation classes. This utility has abstracted those behaviors such that we can pass a list of InjectionSteps to our desired simulation. Accordingly, users can shape their tests without writing custom Gatling simulations. Injection steps implement the factory design pattern to produce a standard Gatling open or closed injection step that is used in the simulation.  To better understand these injection steps refer to the Gatling documentation.  See: https://docs.gatling.io/tutorials/scripting-intro/    
 
 Defining open and closed injection steps in the same list is not supported.
 
