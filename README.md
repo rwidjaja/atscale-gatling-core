@@ -56,12 +56,10 @@ where query-extract is the id of the execution to be run.
 
 For details refer to the pom.xml file and look for:  <artifactId>exec-maven-plugin</artifactId>
 
-If run successfully, there will be two files created in the directory
-src/test/resources/queries 
-for each model defined in the atscale.models property
+If run successfully, there will be two files created in the directory /queries for each model defined in the atscale.models property
 
 
-The easiest way to run Gatling tests is to create an Executor under src/test/java/com/atscale/java/executors.  The project includes open and closed step executors.  These classes run Gatling Simulations using open steps or closed steps.  Simulations can be run using one of the following commands:
+The easiest way to run Gatling tests is to create an Executor under src/main/com/atscale/java/executors.  The project includes open and closed step executors.  These classes run Gatling Simulations using open steps or closed steps.  Simulations can be run using one of the following commands:
 ```shell
  ./mvnw clean install exec:java@open-step-simulation-executor 
 ````
@@ -86,7 +84,7 @@ Scala:
 ```
 
 
-Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in Gatling simulation classes. This utility has abstracted those behaviors such that we can pass a list of injectionsteps to our desired simulation. Accordingly, users can shape their tests without writing custom Gatling simulations. Injection steps implement the factory design pattern to produce a standard Gatling open or closed injection step that is used in the simulation.  To better understand these injection steps refer to the Gatling documentation.  See: https://gatling.io/docs/gatling/reference/current/general/simulation_structure/     
+Gatling provides extensive capabilities to shape our tests.  For instance, we can simulate various numbers of concurrent users ramping up load and ramping down load over time.  These capabilities are defined in Gatling simulation classes. This utility has abstracted those behaviors such that we can pass a list of injectionsteps to our desired simulation. Accordingly, users can shape their tests without writing custom Gatling simulations. Injection steps implement the factory design pattern to produce a standard Gatling open or closed injection step that is used in the simulation.  To better understand these injection steps refer to the Gatling documentation.  See: https://docs.gatling.io/tutorials/scripting-intro/    
 
 Defining open and closed injection steps in the same list is not supported.
 
@@ -98,4 +96,4 @@ A few words on Gatling.  In a typical Gatling simulation, we begin with a set of
 
 ![img.png](img.png)
 
-In this project we have abstracted the test cases by generating queries to run.  We have abstracted the scenarios by creating a standard scenario to run all queries for a given model.  We have abstracted the protocols by providing both JDBC and HTTP (XMLA) protocols. We have abstracted the simulations into 4 patterns.  Finally we abstracted the injection steps by providing a factory design pattern to create open or closed injection steps.  This allows users to shape their tests without having to write custom Gatling simulations.
+In this project our tests are queries run against the AtScale Engine JDBC or XMLA endpoint.  We have abstracted the test cases by generating queries to run -- queries are extracted from the underlying Postgres database that sits behind the AtScale Engine.  We have abstracted the scenarios by creating a standard scenario to run all queries for a given model.  We have abstracted the protocols by providing both JDBC and HTTP (XMLA) protocols. We have abstracted the simulations into 4 patterns which provide OpenStepSimulations or ClosedStepSimulations for JDBC or for XMLA.  Finally we abstracted the injection steps by providing a factory design pattern to create open or closed injection steps.  This allows users to shape their tests without having to write custom Gatling simulations.
