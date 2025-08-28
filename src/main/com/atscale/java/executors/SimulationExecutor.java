@@ -16,7 +16,7 @@ public abstract class SimulationExecutor<T> {
         String projectRoot = System.getProperty("user.dir");
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(String.format("%s/mvnw", projectRoot), "clean", "install");
+            ProcessBuilder processBuilder = new ProcessBuilder(String.format("%s/mvnw", projectRoot), "clean", "compile");
             Process process = processBuilder.start();
             process.waitFor(); // Wait for the process to complete
             if (process.exitValue() != 0) {

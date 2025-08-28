@@ -8,7 +8,20 @@
 
   <name>atscale_gatling</name>
   <description>AtScale Gatling Automated Testing Framework</description>
-  <url>https://www.atscale.com/</url>
+  <url>https://github.com/AtScaleInc/atscale-gatling-core</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:https://github.com/AtScaleInc/atscale-gatling-core.git</connection>
+    <developerConnection>scm:git:git@github.com:AtScaleInc/atscale-gatling-core.git</developerConnection>
+    <url>https://github.com/AtScaleInc/atscale-gatling-core</url>
+    <tag>HEAD</tag>
+  </scm>
   <developers>
     <developer>
       <id>stevejhall</id>
@@ -125,6 +138,38 @@
           <useModulePath>false</useModulePath>
         </configuration>
       </plugin>
+      <!-- Plugin to sign the artifacts there is a settings.xml file configured to support this capability located at ~/.m2/settings.xml-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <gpgArguments>
+            <arg>--batch</arg>
+            <arg>--pinentry-mode</arg>
+            <arg>loopback</arg>
+          </gpgArguments>
+        </configuration>
+      </plugin>
+      <!-- Plugin to deploy the artifacts -->
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -149,7 +194,7 @@
     <dependency>
       <groupId>org.galaxio</groupId>
       <artifactId>gatling-jdbc-plugin_2.13</artifactId>
-      <version>0.13.0-latest</version>
+      <version>0.14.1</version>
     </dependency>
     <!-- For AtScale JDBC Interface -->
     <dependency>
