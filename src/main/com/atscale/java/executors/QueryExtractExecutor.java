@@ -21,10 +21,12 @@ public class QueryExtractExecutor {
         List<String> models = PropertiesFileReader.getAtScaleModels();
         AtScalePostgresDao dao = AtScalePostgresDao.getInstance();
         QueryHistoryFileUtil queryHistoryFileUtil = new QueryHistoryFileUtil(dao);
+
         for(String model: models) {
             queryHistoryFileUtil.cacheQueries(model);
         }
 
         LOGGER.info("QueryExtractExecutor finished.");
+        org.apache.logging.log4j.LogManager.shutdown();
     }
 }

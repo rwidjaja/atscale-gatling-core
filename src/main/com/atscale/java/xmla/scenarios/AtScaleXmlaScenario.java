@@ -1,8 +1,6 @@
 package com.atscale.java.xmla.scenarios;
 
-import com.atscale.java.utils.HashUtil;
 import com.atscale.java.utils.PropertiesFileReader;
-import com.atscale.java.utils.SoapUtil;
 import com.atscale.java.xmla.cases.AtScaleDynamicXmlaActions;
 import com.atscale.java.xmla.cases.NamedHttpRequestActionBuilder;
 import io.gatling.javaapi.core.ChainBuilder;
@@ -10,6 +8,7 @@ import io.gatling.javaapi.core.ScenarioBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -32,6 +31,7 @@ public class AtScaleXmlaScenario {
      */
     public ScenarioBuilder buildScenario(String model, String cube, String catalog, String gatlingRunId) {
         boolean logResponseBody = PropertiesFileReader.getLogXmlaResponseBody(model);
+        Long throttleBy = PropertiesFileReader.getAtScaleThrottleMs();
         AtScaleDynamicXmlaActions xmlaActions = new AtScaleDynamicXmlaActions();
         NamedHttpRequestActionBuilder[] builders = xmlaActions.createPayloadsXmlaQueries(model, cube, catalog);
 
@@ -47,18 +47,16 @@ public class AtScaleXmlaScenario {
                                     long start = session.getLong("queryStart");
                                     long duration = end - start;
                                     int responseSize = response == null? 0: response.length();
-                                    String body = SoapUtil.extractSoapBody(response) == null ? "" : SoapUtil.extractSoapBody(response);
-                                    LOGGER.debug("Extracted Response Body: {}", body);
                                     if(logResponseBody) {
-                                        SESSION_LOGGER.info("xmlaLog gatlingRunId={} gatlingSessionId={} model='{}' cube='{}' catalog='{}' queryName='{}' start={} end={} duration={} responseSize={} queryId={} responsehash={} response={}",
-                                                gatlingRunId, session.userId(), model, cube, catalog, namedBuilder.queryName, start, end, duration, responseSize, SoapUtil.extractQueryId(response), HashUtil.TO_MD5(body), response);
+                                        SESSION_LOGGER.info("xmlaLog gatlingRunId='{}' gatlingSessionId={} model='{}' cube='{}' catalog='{}' queryName='{}' start={} end={} duration={} responseSize={} response={}",
+                                                gatlingRunId, session.userId(), model, cube, catalog, namedBuilder.queryName, start, end, duration, responseSize, response);
                                     } else {
-                                        SESSION_LOGGER.info("xmlaLog gatlingRunId={} gatlingSessionId={} model='{}' cube='{}' catalog='{}' queryName='{}' start={} end={} duration={} responseSize={} responsehash={}",
-                                                gatlingRunId, session.userId(), model, cube, catalog, namedBuilder.queryName, start, end, duration, responseSize, HashUtil.TO_MD5(body));
+                                        SESSION_LOGGER.info("xmlaLog gatlingRunId='{}' gatlingSessionId={} model='{}' cube='{}' catalog='{}' queryName='{}' start={} end={} duration={} responseSize={}",
+                                                gatlingRunId, session.userId(), model, cube, catalog, namedBuilder.queryName, start, end, duration, responseSize);
                                     }
+
                                     return session;
-                                }))
-                .collect(Collectors.toList());
+                                }).pause(Duration.ofMillis(throttleBy))).collect(Collectors.toList());
 
         return scenario("AtScale XMLA Scenario").exec(chains).pause(10);
     }

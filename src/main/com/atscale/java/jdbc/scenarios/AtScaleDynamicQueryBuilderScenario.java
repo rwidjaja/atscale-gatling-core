@@ -8,6 +8,8 @@ import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.ChainBuilder;
 import scala.collection.immutable.Map;
 import static io.gatling.javaapi.core.CoreDsl.exec;
+
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class AtScaleDynamicQueryBuilderScenario {
     public ScenarioBuilder buildScenario(String model, String gatlingRunId) {
         NamedQueryActionBuilder[] namedBuilders = AtScaleDynamicJdbcActions.createBuildersJdbcQueries(model);
         boolean logRows = PropertiesFileReader.getLogSqlQueryRows(model);
+        Long throttleBy = PropertiesFileReader.getAtScaleThrottleMs();
 
         List<ChainBuilder> chains = Arrays.stream(namedBuilders)
                 .map(namedBuilder ->
@@ -45,16 +48,15 @@ public class AtScaleDynamicQueryBuilderScenario {
                                     long start = session.getLong("queryStart");
                                     long duration = end - start;
                                     int rowCount = resultSet.size();
-                                    SESSION_LOGGER.info("sqlLog gatlingRunId={} gatlingSessionId={} model='{}' queryName='{}' start={} end={} duration={} rows={}", gatlingRunId, session.userId(), model, namedBuilder.queryName, start, end, duration, rowCount);
+                                    SESSION_LOGGER.info("sqlLog gatlingRunId='{}' gatlingSessionId={} model='{}' queryName='{}' start={} end={} duration={} rows={}", gatlingRunId, session.userId(), model, namedBuilder.queryName, start, end, duration, rowCount);
                                     if(logRows) {
                                         int rownum = 0;
                                         for (Object row : resultSet) {
-                                            SESSION_LOGGER.info("sqlLog gatlingRunId={} gatlingSessionId={} model='{}' queryName='{}' rownumber={} row={} rowhash={}", gatlingRunId, session.userId(), model, namedBuilder.queryName, rownum++, row, HashUtil.TO_MD5(row.toString()));
+                                            SESSION_LOGGER.info("sqlLog gatlingRunId='{}' gatlingSessionId={} model='{}' queryName='{}' rownumber={} row={} rowhash={}", gatlingRunId, session.userId(), model, namedBuilder.queryName, rownum++, row, HashUtil.TO_MD5(row.toString()));
                                         }
                                     }
                                     return session;
-                                }))
-                .collect(Collectors.toList());
+                                }).pause(Duration.ofMillis(throttleBy))).collect(Collectors.toList());
 
         // pause the scenario executions at 10 milliseconds apart
         return scenario("AtScale Dynamic Query Builder Scenario").exec(chains).pause(10);

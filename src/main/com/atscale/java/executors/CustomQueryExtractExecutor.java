@@ -23,11 +23,19 @@ public class CustomQueryExtractExecutor {
 
         for(String model : models) {
             LOGGER.info("Processing model: {}", model);
-            cacheJdbcQueries(model);
-            cacheXmlaQueries(model);
+            try {
+                cacheJdbcQueries(model);
+            } catch (Exception e) {
+                LOGGER.error("Error caching JDBC queries for model {}: {}", model, e.getMessage());
+            }
+            try {
+                cacheXmlaQueries(model);
+            } catch (Exception e) {
+                LOGGER.error("Error caching XMLA queries for model {}: {}", model, e.getMessage()); 
+            }
         }
-
         LOGGER.info("QueryExtractExecutor finished.");
+        org.apache.logging.log4j.LogManager.shutdown();
     }
 
     private void cacheJdbcQueries(String model) {

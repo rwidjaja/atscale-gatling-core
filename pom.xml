@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atscale.gatling</groupId>
   <artifactId>atscale-gatling-core</artifactId>
-  <version>1.01</version>
+  <version>1.2</version>
   <packaging>jar</packaging>
 
   <name>atscale_gatling</name>
@@ -38,13 +38,14 @@
     <maven.compiler.source>19</maven.compiler.source>
     <maven.compiler.target>19</maven.compiler.target>
     <maven.compiler.release>19</maven.compiler.release>
-    <scala.version>2.13.14</scala.version>
+    <scala.version>2.13.16</scala.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gatling.version>3.14.3</gatling.version>
     <gatling-maven-plugin.version>4.19.2</gatling-maven-plugin.version>
     <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+    <log4j2.version>2.25.1</log4j2.version>
   </properties>
   <build>
     <sourceDirectory>src/main</sourceDirectory>
@@ -99,6 +100,9 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.3.0</version>
+        <configuration>
+          <classpathScope>runtime</classpathScope>
+        </configuration>
         <executions>
           <execution>
             <id>query-extract</id>
@@ -110,21 +114,48 @@
             </configuration>
           </execution>
           <execution>
-            <id>open-step-simulation-executor</id>
+            <id>installer-query-extract</id>
             <goals>
               <goal>java</goal>
             </goals>
             <configuration>
-              <mainClass>com.atscale.java.executors.OpenStepSimulationExecutor</mainClass>
+              <mainClass>com.atscale.java.executors.InstallerVerQueryExtractExecutor</mainClass>
             </configuration>
           </execution>
           <execution>
-            <id>closed-step-simulation-executor</id>
+            <id>open-step-concurrent-simulation-executor</id>
             <goals>
               <goal>java</goal>
             </goals>
             <configuration>
-              <mainClass>com.atscale.java.executors.ClosedStepSimulationExecutor</mainClass>
+              <mainClass>com.atscale.java.executors.OpenStepConcurrentSimulationExecutor</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>closed-step-concurrent-simulation-executor</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>com.atscale.java.executors.ClosedStepConcurrentSimulationExecutor</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>open-step-sequential-simulation-executor</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>com.atscale.java.executors.OpenStepSequentialSimulationExecutor</mainClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>closed-step-sequential-simulation-executor</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>com.atscale.java.executors.ClosedStepSequentialSimulationExecutor</mainClass>
             </configuration>
           </execution>
         </executions>
@@ -137,6 +168,25 @@
         <configuration>
           <useModulePath>false</useModulePath>
         </configuration>
+      </plugin>
+      <!-- Plugin to move the dependencies to the target directory -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <!-- Plugin to sign the artifacts there is a settings.xml file configured to support this capability located at ~/.m2/settings.xml-->
       <plugin>
@@ -201,13 +251,83 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Use enforcer to catch any dependency conflicts -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <dependencyConvergence/>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-bom</artifactId>
+        <version>${log4j2.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>${scala.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.17</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jodd</groupId>
+        <artifactId>jodd-util</artifactId>
+        <version>6.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xmlresolver</groupId>
+        <artifactId>xmlresolver</artifactId>
+        <version>6.0.16</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-annotations</artifactId>
+        <version>4.9.3</version>
+      </dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+          <version>2.19.2</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+          <version>3.18.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-reflect</artifactId>
+        <version>2.13.10</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>2.13.14</version>
+      <version>${scala.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
@@ -220,12 +340,34 @@
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
       <version>${gatling.version}</version>
+      <!-- Keep the logback dependencies from being included removing these lines breaks log4j2 and affects the run_logs-->
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- For JDBC load simulations, we need to add the jdbc plugin -->
     <dependency>
       <groupId>org.galaxio</groupId>
       <artifactId>gatling-jdbc-plugin_2.13</artifactId>
       <version>0.14.1</version>
+      <!-- Keep the logback dependencies from being included removing these lines breaks log4j2 and affects the run_logs-->
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- For AtScale JDBC Interface -->
     <dependency>
@@ -234,14 +376,16 @@
       <version>42.7.3</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>2.0.12</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.5.18</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -249,32 +393,24 @@
       <version>5.10.2</version>
       <scope>test</scope>
     </dependency>
-    <!-- We have mixed dependencies in the dependency tree. -->
-    <!-- Maven will load the following transitive dependencies automatically forcing all to the specified package versions-->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.19.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jodd</groupId>
-      <artifactId>jodd-util</artifactId>
-      <version>6.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs-annotations</artifactId>
-      <version>4.9.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xmlresolver</groupId>
-      <artifactId>xmlresolver</artifactId>
-      <version>6.0.16</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.18.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.14.0</version>
+    </dependency>
+    <!-- Support JDBC for AtScale Installer Version requires Hive JDBC Uber Jar downloaded to /lib.
+    It is sourced from https://github.com/timveil/hive-jdbc-uber-jar/releases
+    Install this from /lib by following the instructions in README.md -->
+    <dependency>
+      <groupId>veil.hdp.hive</groupId>
+      <artifactId>hive-jdbc-uber</artifactId>
+      <version>2.6.3.0-235</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
