@@ -22,7 +22,7 @@ public class QueryHistoryFileUtil {
         this.dao = dao;
     }
 
-    private void writeQueryHistoryToFile(List<QueryHistoryDto> dtos, String filePath) throws IOException {
+    protected void writeQueryHistoryToFile(List<QueryHistoryDto> dtos, String filePath) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dtos);
         Files.write(Paths.get(filePath), json.getBytes());
@@ -74,6 +74,8 @@ public class QueryHistoryFileUtil {
             writeQueryHistoryToFile(queryHistoryList, filePath);
         } catch (IOException e) {
             throw new RuntimeException("Error caching queries to file: " + filePath, e);
+        } catch (IllegalArgumentException e) {
+            LOGGER.warn("Validation error {}", e.getMessage(), e);
         }
     }
 
@@ -88,6 +90,8 @@ public class QueryHistoryFileUtil {
             writeQueryHistoryToFile(queryHistoryList, filePath);
         } catch (IOException e) {
             throw new RuntimeException("Error caching queries to file: " + filePath, e);
+        } catch (IllegalArgumentException e) {
+            LOGGER.warn("Validation error {}", e.getMessage(), e);
         }
     }
 
@@ -109,7 +113,7 @@ public class QueryHistoryFileUtil {
         }
     }
 
-    private void cacheJdbcQueries(String model) {
+    protected void cacheJdbcQueries(String model) {
         String filePath = getJdbcFilePath(model);
         try {
             List<QueryHistoryDto> queryHistoryList = AtScalePostgresDao.getInstance()
@@ -120,7 +124,7 @@ public class QueryHistoryFileUtil {
         }
     }
 
-    private void cacheXmlaQueries(String model) {
+    protected void cacheXmlaQueries(String model) {
         String filePath = getXmlaFilePath(model);
         try {
             List<QueryHistoryDto> queryHistoryList = AtScalePostgresDao.getInstance()
