@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atscale.gatling</groupId>
   <artifactId>atscale-gatling-core</artifactId>
-  <version>1.5</version>
+  <version>1.6</version>
   <packaging>jar</packaging>
 
   <name>atscale_gatling</name>
@@ -46,6 +46,7 @@
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <log4j2.version>2.25.1</log4j2.version>
+    <mockito.version>5.20.0</mockito.version>
   </properties>
   <build>
     <sourceDirectory>src/main</sourceDirectory>
@@ -59,6 +60,11 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <compilerArgs>
+            <arg>-Xdoclint:syntax</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -179,6 +185,7 @@
         <version>3.2.5</version>
         <configuration>
           <useModulePath>false</useModulePath>
+          <argLine>-javaagent:${user.home}/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.7/byte-buddy-agent-1.17.7.jar</argLine>
         </configuration>
       </plugin>
       <!-- Plugin to move the dependencies to the target directory -->
@@ -343,7 +350,7 @@
         <artifactId>commons-pool2</artifactId>
         <version>2.12.1</version>
       </dependency>
-    </dependencies>
+  </dependencies>
   </dependencyManagement>
   <dependencies>
     <dependency>
@@ -430,6 +437,84 @@
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
       <version>5.12.0</version>
+    </dependency>
+    <!-- Support AWS Secrets Manager -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>secretsmanager</artifactId>
+      <version>2.35.11</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-classes-epoll</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-handler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-resolver</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-buffer</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-codec-http</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-codec-http2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-resolver</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-buffer</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcomponents-httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- Support JDBC for AtScale Installer Version requires Hive JDBC Uber Jar downloaded to /lib.
     It is sourced from https://github.com/timveil/hive-jdbc-uber-jar/releases

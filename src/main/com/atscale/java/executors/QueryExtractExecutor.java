@@ -1,12 +1,13 @@
 package com.atscale.java.executors;
 
 import com.atscale.java.dao.AtScalePostgresDao;
+import com.atscale.java.utils.AwsSecretsManager;
+import com.atscale.java.utils.PropertiesManager;
 import com.atscale.java.utils.QueryHistoryFileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.atscale.java.utils.PropertiesFileReader;
-import java.util.List;
 
+import java.util.List;
 
 public class QueryExtractExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryExtractExecutor.class);
@@ -18,7 +19,8 @@ public class QueryExtractExecutor {
 
     protected void execute() {
         LOGGER.info("QueryExtractExecutor started.");
-        List<String> models = PropertiesFileReader.getAtScaleModels();
+        initializeAdditionalProperties();
+        List<String> models = PropertiesManager.getAtScaleModels();
         AtScalePostgresDao dao = AtScalePostgresDao.getInstance();
         QueryHistoryFileUtil queryHistoryFileUtil = new QueryHistoryFileUtil(dao);
 
@@ -28,5 +30,18 @@ public class QueryExtractExecutor {
 
         LOGGER.info("QueryExtractExecutor finished.");
         org.apache.logging.log4j.LogManager.shutdown();
+    }
+
+    protected void initializeAdditionalProperties() {
+            String regionProperty = "aws.region";
+            String secretsKeyProperty = "aws.secrets-key";
+            if(PropertiesManager.hasProperty(regionProperty) && PropertiesManager.hasProperty(secretsKeyProperty)) {
+                LOGGER.info("Loading additional properties from AWS Secrets Manager.");
+                String region = PropertiesManager.getCustomProperty(regionProperty);
+                String secretsKey = PropertiesManager.getCustomProperty(secretsKeyProperty);
+                PropertiesManager.setCustomProperties(new AwsSecretsManager().loadSecrets(region, secretsKey));
+            } else {
+                LOGGER.warn("AWS region or secret-key property not found. Skipping loading additional properties from AWS Secrets Manager.");
+            }
     }
 }

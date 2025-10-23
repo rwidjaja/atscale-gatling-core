@@ -1,27 +1,45 @@
 package com.atscale.java.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.List;
 import java.util.Arrays;
 
 @SuppressWarnings("unused")
-public class PropertiesFileReader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesFileReader.class);
+public class PropertiesManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesManager.class);
     private final Properties properties = new Properties();
     private static final String PROPERTIES_FILE = "systems.properties";
-    private static final PropertiesFileReader instance = new PropertiesFileReader();
+    private static final PropertiesManager instance = new PropertiesManager();
 
-    private PropertiesFileReader() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(PropertiesFileReader.PROPERTIES_FILE)) {
-            if (input == null) {
-                throw new RuntimeException("Properties file not found: " + PropertiesFileReader.PROPERTIES_FILE);
+    private PropertiesManager(){
+        try{
+            URL propertyFileURl = getClass().getClassLoader().getResource(PropertiesManager.PROPERTIES_FILE);
+            if(null == propertyFileURl){
+                LOGGER.error("Properties file not found: {}", PropertiesManager.PROPERTIES_FILE);
+                return;
             }
-            properties.load(input);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load properties file: " + PropertiesFileReader.PROPERTIES_FILE, e);
+            Path path = java.nio.file.Paths.get(propertyFileURl.toURI());
+            if (Files.isRegularFile(path)){
+                LOGGER.info("Loading properties file from path: {}", path);
+                try (InputStream input = getClass().getClassLoader().getResourceAsStream(PropertiesManager.PROPERTIES_FILE)) {
+                    properties.load(input);
+                } catch (IOException e){
+                    LOGGER.error("Error loading properties file: {}", e.getMessage());
+                }
+            } else {
+                LOGGER.error("Properties file not found at path: {}", path);
+            }
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -204,6 +222,22 @@ public class PropertiesFileReader {
     public static String getAtScaleXmlaAuthPassword(String model) {
         String key = String.format("atscale.%s.xmla.auth.password", clean(model));
         return getProperty(key);
+    }
+
+    public static void setCustomProperties(java.util.Map<String, String> customProperties) {
+        for (String key : customProperties.keySet()) {
+            LOGGER.info("Setting custom property: {} of size {}", key, customProperties.get(key).length());
+            instance.properties.setProperty(key, customProperties.get(key));
+        }
+    }
+
+    public static boolean hasProperty(String key) {
+        String property = instance.properties.getProperty(key);
+        return StringUtils.isNotEmpty(property);
+    }
+
+    public static String getCustomProperty(String propertyName) {
+        return getProperty(propertyName);
     }
 
     private static String getProperty(String key) {
