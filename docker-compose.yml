@@ -1,0 +1,13 @@
+services:
+  atscale-gatling:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: atscale-gatling
+    env_file:
+      - .env  # This loads all variables from .env file
+    volumes:
+      - ./output:/app/output
+      - ./run_logs:/app/run_logs
+      - ./config/systems.properties:/app/config/systems.properties
+    working_dir: /app
