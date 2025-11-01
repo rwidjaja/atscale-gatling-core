@@ -160,7 +160,7 @@ Run one of the following commands to extract queries from the AtScale database i
 #### AtScale Container Product (Kubernetes)
 
 ```shell
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.QueryExtractExecutor"
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.QueryExtractExecutor"
 ```
 There is also a maven goal defined in the pom.xml file.  The same command can be run using:
 ```shell
@@ -169,7 +169,7 @@ There is also a maven goal defined in the pom.xml file.  The same command can be
 
 #### AtScale Installer Product
 ```shell
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.InstallerVerQueryExtractExecutor"
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.InstallerVerQueryExtractExecutor"
 ```
 There is also a maven goal defined in the pom.xml file.  The same command can be run using:
 
@@ -217,11 +217,11 @@ Output of the simulations will be found in the /target/gatling.  Each simulation
 Assuming you simply modify the existing executors to run your models, you can run the simulations using the following commands:
 
 ```shell
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.OpenStepSequentialSimulationExecutor"
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.OpenStepSequentialSimulationExecutor"
 ```
 
 ```shell                                                                                      
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.ClosedStepSequentialSimulationExecutor"     
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.ClosedStepSequentialSimulationExecutor"     
 ```                                                                                           
 There is also a maven goal defined in the pom.xml file.  The same commands can be run using:
 ```shell
@@ -234,11 +234,11 @@ There is also a maven goal defined in the pom.xml file.  The same commands can b
               
 For concurrent execution, use the following commands:
 ```shell
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.OpenStepConcurrentSimulationExecutor"
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.OpenStepConcurrentSimulationExecutor"
 ```
 
 ```shell                                                                                      
- ./mvnw clean compile exec:java -Dexec.mainClass="executors.ClosedStepConcurrentSimulationExecutor"     
+ ./mvnw clean compile exec:java -Dexec.mainClass="com.atscale.java.executors.ClosedStepConcurrentSimulationExecutor"     
 ```                                                                                          
 There is also a maven goal defined in the pom.xml file.  The same commands can be run using:
 ```shell
