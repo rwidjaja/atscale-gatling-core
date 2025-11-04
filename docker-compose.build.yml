@@ -6,7 +6,8 @@ services:
     platform: linux/amd64
     env_file: .env
     volumes:
-      - ./config/systems.properties:/app/target/classes/systems.properties:ro
-      - ./run_logs:/app/run_logs
-      - ./queries:/app/queries
+      - ./working_dir/config/systems.properties:/app/target/classes/systems.properties:ro
+      - ./working_dir/run_logs:/app/run_logs
+      - ./working_dir/queries:/app/queries
+      - ./working_dir/app_logs:/app/app_logs
     container_name: atscale-gatling-runner
