@@ -13,4 +13,4 @@ echo "Running executor: $EXECUTOR_CLASS"
 
 exec ./mvnw exec:java \
   -Dexec.mainClass="$EXECUTOR_CLASS" \
-  -Dsystems.properties.path=/app/systems.properties
+  -Dsystems.properties.path=/app/src/main/resources/systems.properties

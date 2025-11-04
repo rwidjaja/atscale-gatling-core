@@ -1,10 +1,10 @@
-version: '3.8'
 services:
   atscale-gatling:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: rwidjaja/atscale-gatling
+    platform: linux/amd64
     env_file: .env
     volumes:
-      - ./config/systems.properties:/app/systems.properties:ro
+       - ./config/systems.properties:/app/target/classes/systems.properties:ro
+       - ./run_logs:/app/run_logs
+       - ./queries:/app/queries
     container_name: atscale-gatling-runner

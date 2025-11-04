@@ -2,7 +2,7 @@ FROM eclipse-temurin:22-jdk
 WORKDIR /app
 
 COPY . /app
-COPY ./config/systems.properties /app/systems.properties
+COPY ./config/systems.properties /app/target/classes/systems.properties
 
 # Install missing Hive dependency
 RUN ./mvnw install:install-file \
