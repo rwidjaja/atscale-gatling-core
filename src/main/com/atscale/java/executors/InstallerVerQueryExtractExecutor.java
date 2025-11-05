@@ -6,14 +6,11 @@ import com.atscale.java.utils.QueryHistoryFileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 
 public class InstallerVerQueryExtractExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallerVerQueryExtractExecutor.class);
@@ -25,7 +22,6 @@ public class InstallerVerQueryExtractExecutor {
     }
 
     protected void execute() {
-        // ADD DEBUG OUTPUT HERE:
         System.out.println("=== InstallerVerQueryExtractExecutor Starting ===");
         writeDebugFile("=== InstallerVerQueryExtractExecutor Starting ===\n");
         
@@ -39,6 +35,12 @@ public class InstallerVerQueryExtractExecutor {
             List<String> models = PropertiesManager.getAtScaleModels();
             System.out.println("Models found: " + models);
             writeDebugFile("Models found: " + models + "\n");
+            
+            if (models == null || models.isEmpty()) {
+                System.out.println("ERROR: No models found in configuration!");
+                writeDebugFile("ERROR: No models found in configuration!\n");
+                return;
+            }
             
             for(String model : models) {
                 System.out.println("Processing model: " + model);
@@ -67,9 +69,9 @@ public class InstallerVerQueryExtractExecutor {
             System.out.println("FATAL ERROR in setup: " + e.getMessage());
             writeDebugFile("FATAL ERROR in setup: " + e.getMessage() + "\n");
             e.printStackTrace();
+            return; // Don't continue if setup failed
         }
         
-        // ORIGINAL CODE CONTINUES HERE:
         LOGGER.info("QueryExtractExecutor started.");
         writeDebugFile("QueryExtractExecutor started.\n");
         List<String> models = PropertiesManager.getAtScaleModels();
@@ -90,6 +92,7 @@ public class InstallerVerQueryExtractExecutor {
                 LOGGER.error("Error caching JDBC queries for model {}: {}", model, e.getMessage());
                 e.printStackTrace();
             }
+            
             try {
                 System.out.println("Starting XMLA query caching for model: " + model);
                 writeDebugFile("Starting XMLA query caching for model: " + model + "\n");
@@ -103,24 +106,26 @@ public class InstallerVerQueryExtractExecutor {
                 e.printStackTrace();
             }
         }
+        
+        // Final verification of all created files
+        verifyAllJsonFiles();
+        
         System.out.println("=== InstallerVerQueryExtractExecutor Finished ===");
         writeDebugFile("=== InstallerVerQueryExtractExecutor Finished ===\n");
         LOGGER.info("QueryExtractExecutor finished.");
         org.apache.logging.log4j.LogManager.shutdown();
     }
     
-   private void writeDebugFile(String content) {
-        String debugFilePath = "/app/run_logs/installer_debug.log"; // Docker-friendly path
+    private void writeDebugFile(String content) {
+        String debugFilePath = "/app/run_logs/installer_debug.log";
         
         try {
-            // Ensure directory exists
             Path path = Paths.get(debugFilePath);
             Path parentDir = path.getParent();
             if (parentDir != null && !Files.exists(parentDir)) {
                 Files.createDirectories(parentDir);
             }
             
-            // Write with append mode
             Files.writeString(path, content, 
                 java.nio.file.StandardOpenOption.CREATE, 
                 java.nio.file.StandardOpenOption.APPEND,
@@ -128,31 +133,31 @@ public class InstallerVerQueryExtractExecutor {
                 
         } catch (IOException e) {
             System.err.println("Failed to write debug file: " + e.getMessage());
-            // Don't throw, just log to console
         }
     }
 
     private void ensureQueriesDirectoryExists() {
         try {
             Path queriesPath = Paths.get(QUERIES_DIR);
+            System.out.println("Checking queries directory: " + queriesPath.toAbsolutePath());
+            
             if (!Files.exists(queriesPath)) {
+                System.out.println("Directory doesn't exist, creating: " + QUERIES_DIR);
                 Files.createDirectories(queriesPath);
                 System.out.println("Created queries directory: " + QUERIES_DIR);
-                
-                // Set appropriate permissions for Docker
                 setDirectoryPermissions(queriesPath);
             } else {
                 System.out.println("Queries directory already exists: " + QUERIES_DIR);
                 
-                // Verify it's writable
                 if (!Files.isWritable(queriesPath)) {
                     System.err.println("WARNING: Queries directory is not writable: " + QUERIES_DIR);
+                    // Try to fix permissions
+                    setDirectoryPermissions(queriesPath);
                 } else {
                     System.out.println("Queries directory is writable: " + QUERIES_DIR);
                 }
             }
             
-            // Test write permission
             testWritePermission();
             
         } catch (IOException e) {
@@ -164,7 +169,6 @@ public class InstallerVerQueryExtractExecutor {
 
     private void setDirectoryPermissions(Path path) {
         try {
-            // Make directory readable and writable in Docker environment
             java.io.File dir = path.toFile();
             if (!dir.setReadable(true, false) || 
                 !dir.setWritable(true, false) || 
@@ -190,149 +194,177 @@ public class InstallerVerQueryExtractExecutor {
         } catch (IOException e) {
             System.err.println("✗ Write test FAILED in: " + QUERIES_DIR);
             System.err.println("Error: " + e.getMessage());
+            throw new RuntimeException("Cannot write to queries directory: " + QUERIES_DIR, e);
         }
     }
 
     private void cacheJdbcQueries(String model) {
         System.out.println("=== cacheJdbcQueries called for model: " + model + " ===");
         
-        // Implement the logic to cache JDBC queries
-        // This method should be overridden in subclasses if needed
         LOGGER.info("Caching JDBC queries...");
 
         final String query = """
             SELECT
-                            q.service,
-                            q.query_language,
-                            q.query_text as inbound_text,
-                            MAX(s.subquery_text) as outbound_text,
-                            p.cube_name,
-                            p.project_id,
-                            case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
-                            COUNT(*)                             AS num_times,
-                            AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
-                            AVG(r.result_size)                   AS avg_result_size
-                        FROM
-                            atscale.queries q
-                        INNER JOIN
-                            atscale.query_results r
-                        ON
-                            q.query_id=r.query_id
-                        INNER JOIN
-                            atscale.queries_planned p
-                        ON
-                            q.query_id=p.query_id
-                        INNER JOIN
-                            atscale.subqueries s
-                        ON
-                            q.query_id=s.query_id
-                        WHERE
-                        q.query_language = ? AND
-                        p.planning_started > current_timestamp - interval '60 day'
-                        and p.cube_name = ?
-                        AND q.service = 'user-query'
-                        AND r.succeeded = true
-                        AND LENGTH(q.query_text) > 100
-                        AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
-                        AND q.query_text NOT LIKE '-- statement does not return rows%'
-                        GROUP BY
-                            1,
-                            2,
-                            3,
-                            5,
-                            6
-                        ORDER BY 3
+                q.service,
+                q.query_language,
+                q.query_text as inbound_text,
+                MAX(s.subquery_text) as outbound_text,
+                p.cube_name,
+                p.project_id,
+                case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
+                COUNT(*)                             AS num_times,
+                AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
+                AVG(r.result_size)                   AS avg_result_size
+            FROM
+                atscale.queries q
+            INNER JOIN
+                atscale.query_results r
+            ON
+                q.query_id=r.query_id
+            INNER JOIN
+                atscale.queries_planned p
+            ON
+                q.query_id=p.query_id
+            INNER JOIN
+                atscale.subqueries s
+            ON
+                q.query_id=s.query_id
+            WHERE
+                q.query_language = ? AND
+                p.planning_started > current_timestamp - interval '60 day'
+                and p.cube_name = ?
+                AND q.service = 'user-query'
+                AND r.succeeded = true
+                AND LENGTH(q.query_text) > 100
+                AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
+                AND q.query_text NOT LIKE '-- statement does not return rows%'
+            GROUP BY
+                1, 2, 3, 5, 6
+            ORDER BY 3
         """;
 
         System.out.println("Creating DAO instance...");
         AtScalePostgresDao dao = AtScalePostgresDao.getInstance();
+        if (dao == null) {
+            System.err.println("ERROR: Failed to create AtScalePostgresDao instance");
+            return;
+        }
+        
         System.out.println("DAO instance created, creating QueryHistoryFileUtil...");
         
-        // Create QueryHistoryFileUtil with the correct output directory
+        // FIX: Use the single-argument constructor that exists
         QueryHistoryFileUtil queryHistoryFileUtil = new QueryHistoryFileUtil(dao);
         
         System.out.println("Starting JDBC query caching...");
-        System.out.println("Output directory for JSON files: " + QUERIES_DIR);
+        System.out.println("Expected output directory for JSON files: " + QUERIES_DIR);
+        
+        // List files before operation for debugging
+        listFilesInQueriesDir("Before JDBC caching");
         
         queryHistoryFileUtil.cacheJdbcQueries(model, query, AtScalePostgresDao.QueryLanguage.INSTALLER_SQL.getValue(), model);
         System.out.println("JDBC query caching completed.");
         
-        // Verify JSON files were created
+        // List files after operation for debugging
+        listFilesInQueriesDir("After JDBC caching");
+        
         verifyJsonFilesCreated(model, "jdbc");
     }
 
     private void cacheXmlaQueries(String model) {
         System.out.println("=== cacheXmlaQueries called for model: " + model + " ===");
         
-        // Implement the logic to cache XMLA queries
-        // This method should be overridden in subclasses if needed
         LOGGER.info("Caching XMLA queries...");
 
         final String query = """
             SELECT
-                            q.service,
-                            q.query_language,
-                            q.query_text as inbound_text,
-                            MAX(s.subquery_text) as outbound_text,
-                            p.cube_name,
-                            p.project_id,
-                            case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
-                            COUNT(*)                             AS num_times,
-                            AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
-                            AVG(r.result_size)                   AS avg_result_size
-                        FROM
-                            atscale.queries q
-                        INNER JOIN
-                            atscale.query_results r
-                        ON
-                            q.query_id=r.query_id
-                        INNER JOIN
-                            atscale.queries_planned p
-                        ON
-                            q.query_id=p.query_id
-                        INNER JOIN
-                            atscale.subqueries s
-                        ON
-                            q.query_id=s.query_id
-                        WHERE
-                        q.query_language = ? AND
-                        p.planning_started > current_timestamp - interval '60 day'
-                        and p.cube_name = ?
-                        AND q.service = 'user-query'
-                        AND r.succeeded = true
-                        AND LENGTH(q.query_text) > 100
-                        AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
-                        AND q.query_text NOT LIKE '-- statement does not return rows%'
-                        --AND q.query_text not like '%&%'
-                        GROUP BY
-                            1,
-                            2,
-                            3,
-                            5,
-                            6
-                        ORDER BY 3
+                q.service,
+                q.query_language,
+                q.query_text as inbound_text,
+                MAX(s.subquery_text) as outbound_text,
+                p.cube_name,
+                p.project_id,
+                case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
+                COUNT(*)                             AS num_times,
+                AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
+                AVG(r.result_size)                   AS avg_result_size
+            FROM
+                atscale.queries q
+            INNER JOIN
+                atscale.query_results r
+            ON
+                q.query_id=r.query_id
+            INNER JOIN
+                atscale.queries_planned p
+            ON
+                q.query_id=p.query_id
+            INNER JOIN
+                atscale.subqueries s
+            ON
+                q.query_id=s.query_id
+            WHERE
+                q.query_language = ? AND
+                p.planning_started > current_timestamp - interval '60 day'
+                and p.cube_name = ?
+                AND q.service = 'user-query'
+                AND r.succeeded = true
+                AND LENGTH(q.query_text) > 100
+                AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
+                AND q.query_text NOT LIKE '-- statement does not return rows%'
+            GROUP BY
+                1, 2, 3, 5, 6
+            ORDER BY 3
         """;
 
         System.out.println("Creating DAO instance...");
         AtScalePostgresDao dao = AtScalePostgresDao.getInstance();
+        if (dao == null) {
+            System.err.println("ERROR: Failed to create AtScalePostgresDao instance");
+            return;
+        }
+        
         System.out.println("DAO instance created, creating QueryHistoryFileUtil...");
         
-        // Create QueryHistoryFileUtil with the correct output directory
+        // FIX: Use the single-argument constructor that exists
         QueryHistoryFileUtil queryHistoryFileUtil = new QueryHistoryFileUtil(dao);
         
         System.out.println("Starting XMLA query caching...");
-        System.out.println("Output directory for JSON files: " + QUERIES_DIR);
+        System.out.println("Expected output directory for JSON files: " + QUERIES_DIR);
+        
+        // List files before operation for debugging
+        listFilesInQueriesDir("Before XMLA caching");
         
         queryHistoryFileUtil.cacheXmlaQueries(model, query, AtScalePostgresDao.QueryLanguage.XMLA.getValue(), model);
         System.out.println("XMLA query caching completed.");
         
-        // Verify JSON files were created
+        // List files after operation for debugging
+        listFilesInQueriesDir("After XMLA caching");
+        
         verifyJsonFilesCreated(model, "xmla");
+    }
+
+    private void listFilesInQueriesDir(String context) {
+        try {
+            Path queriesDir = Paths.get(QUERIES_DIR);
+            if (Files.exists(queriesDir) && Files.isDirectory(queriesDir)) {
+                System.out.println("=== " + context + " ===");
+                try (var stream = Files.list(queriesDir)) {
+                    long fileCount = stream
+                        .map(path -> "  - " + path.getFileName())
+                        .peek(System.out::println)
+                        .count();
+                    
+                    if (fileCount == 0) {
+                        System.out.println("  (empty directory)");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error listing files in queries directory: " + e.getMessage());
+        }
     }
 
     private void verifyJsonFilesCreated(String model, String queryType) {
         try {
-            // Check for common JSON file patterns
             Path queriesDir = Paths.get(QUERIES_DIR);
             if (Files.exists(queriesDir) && Files.isDirectory(queriesDir)) {
                 System.out.println("Checking for JSON files in: " + QUERIES_DIR);
@@ -340,19 +372,42 @@ public class InstallerVerQueryExtractExecutor {
                 try (var stream = Files.list(queriesDir)) {
                     long jsonFileCount = stream
                         .filter(path -> path.toString().endsWith(".json"))
-                        .filter(path -> path.toString().toLowerCase().contains(model.toLowerCase()) || 
-                                       path.toString().toLowerCase().contains(queryType.toLowerCase()))
                         .count();
                     
+                    System.out.println("Total JSON files found: " + jsonFileCount);
+                    
                     if (jsonFileCount > 0) {
-                        System.out.println("✓ Found " + jsonFileCount + " JSON files for " + queryType + " queries in model: " + model);
-                    } else {
-                        System.out.println("⚠ No JSON files found for " + queryType + " queries in model: " + model);
+                        // List all JSON files
+                        try (var jsonStream = Files.list(queriesDir)) {
+                            jsonStream
+                                .filter(path -> path.toString().endsWith(".json"))
+                                .forEach(path -> System.out.println("  - " + path.getFileName()));
+                        }
                     }
                 }
             }
         } catch (IOException e) {
             System.err.println("Error verifying JSON files: " + e.getMessage());
+        }
+    }
+
+    private void verifyAllJsonFiles() {
+        System.out.println("=== FINAL VERIFICATION OF ALL JSON FILES ===");
+        listFilesInQueriesDir("Final directory contents");
+        
+        try {
+            Path queriesDir = Paths.get(QUERIES_DIR);
+            if (Files.exists(queriesDir)) {
+                long totalSize;
+                try (var stream = Files.walk(queriesDir)) {
+                    totalSize = stream
+                        .filter(Files::isRegularFile)
+                        .count();
+                }
+                System.out.println("Total files in queries directory: " + totalSize);
+            }
+        } catch (IOException e) {
+            System.err.println("Error in final verification: " + e.getMessage());
         }
     }
 }
