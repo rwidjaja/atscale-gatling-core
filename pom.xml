@@ -66,6 +66,7 @@
           </compilerArgs>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${maven-resources-plugin.version}</version>
@@ -74,7 +75,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>${maven-jar-plugin.version}</version>
         <configuration>
-          <excludes>
+   <!--       <excludes>
             <exclude>systems.properties</exclude>
             <exclude>com/atscale/java/executors/ClosedStepConcurrentSimulationExecutor.class</exclude>
             <exclude>com/atscale/java/executors/ClosedStepSequentialSimulationExecutor.class</exclude>
@@ -83,6 +84,7 @@
             <exclude>com/atscale/java/executors/CustomQueryExtractExecutor.class</exclude>
             <exclude>com/atscale/java/executors/InstallerVerQueryExtractExecutor.class</exclude>
           </excludes>
+          -->
         </configuration>
       </plugin>
       <plugin>
@@ -188,6 +190,32 @@
           <argLine>-javaagent:${user.home}/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.7/byte-buddy-agent-1.17.7.jar</argLine>
         </configuration>
       </plugin>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.5.0</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <createDependencyReducedPom>false</createDependencyReducedPom>
+             <filters>
+          <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+              <exclude>META-INF/*.SF</exclude>
+              <exclude>META-INF/*.DSA</exclude>
+              <exclude>META-INF/*.RSA</exclude>
+            </excludes>
+          </filter>
+        </filters>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
       <!-- Plugin to move the dependencies to the target directory -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

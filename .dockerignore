@@ -1,0 +1,6 @@
+target
+.git
+*.log
+node_modules
+working_dir/run_logs
+working_dir/app_logs

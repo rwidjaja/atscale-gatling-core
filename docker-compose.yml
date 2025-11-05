@@ -1,8 +1,5 @@
 services:
   atscale-gatling:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: rwidjaja/atscale-gatling:latest
     platform: linux/amd64
     env_file: .env

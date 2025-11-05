@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: rwidjaja/atscale-gatling:latest
     platform: linux/amd64
     env_file: .env
     volumes:
@@ -11,3 +12,4 @@ services:
       - ./working_dir/queries:/app/queries
       - ./working_dir/app_logs:/app/app_logs
     container_name: atscale-gatling-runner
+

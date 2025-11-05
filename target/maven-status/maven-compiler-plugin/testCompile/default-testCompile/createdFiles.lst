@@ -1,8 +1,0 @@
-com/atscale/java/utils/CsvLoaderUtilTest.class
-com/atscale/java/utils/PropertiesManagerTest.class
-com/atscale/java/injectionsteps/InjectionStepMarshallerTest.class
-com/atscale/java/utils/JsonUtilTest.class
-com/atscale/java/executors/SimulationExecutorTest.class
-com/atscale/java/utils/SecretsManagerTest.class
-com/atscale/java/executors/SimulationExecutorTest$TestSimulationExecutor.class
-com/atscale/java/utils/QueryHistoryFileUtilTest.class

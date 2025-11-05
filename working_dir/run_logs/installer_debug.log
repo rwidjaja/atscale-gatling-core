@@ -67,3 +67,30 @@ JDBC query caching completed for model: Internet Sales Cube - Postgres
 Starting XMLA query caching for model: Internet Sales Cube - Postgres
 XMLA query caching completed for model: Internet Sales Cube - Postgres
 === InstallerVerQueryExtractExecutor Finished ===
+=== InstallerVerQueryExtractExecutor Starting ===
+Properties loaded successfully, checking models...
+=== InstallerVerQueryExtractExecutor Starting ===
+Properties loaded successfully, checking models...
+=== InstallerVerQueryExtractExecutor Starting ===
+Properties loaded successfully, checking models...
+Models found: [ASAdventureSmall, Internet Sales Cube - Postgres]
+Processing model: ASAdventureSmall
+  JDBC URL: jdbc:postgresql://10.200.1.37:15432/ASAdventureSmall
+  JDBC User: admin
+  XMLA URL: https://10.200.1.37:10502/xmla/default/37022d31-a848-4e89-71de-7047cc69ee77
+Processing model: Internet Sales Cube - Postgres
+  JDBC URL: jdbc:postgresql://10.200.1.37:15432/Sales%20Insights%20-%20Postgres
+  JDBC User: admin
+  XMLA URL: https://10.200.1.37:10502/xmla/default/37022d31-a848-4e89-71de-7047cc69ee77
+QueryExtractExecutor started.
+Processing model: ASAdventureSmall
+Starting JDBC query caching for model: ASAdventureSmall
+JDBC query caching completed for model: ASAdventureSmall
+Starting XMLA query caching for model: ASAdventureSmall
+XMLA query caching completed for model: ASAdventureSmall
+Processing model: Internet Sales Cube - Postgres
+Starting JDBC query caching for model: Internet Sales Cube - Postgres
+JDBC query caching completed for model: Internet Sales Cube - Postgres
+Starting XMLA query caching for model: Internet Sales Cube - Postgres
+XMLA query caching completed for model: Internet Sales Cube - Postgres
+=== InstallerVerQueryExtractExecutor Finished ===

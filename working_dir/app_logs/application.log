@@ -87,3 +87,349 @@ java.lang.IllegalArgumentException: No results returned for the user provided qu
 2025-11-05 03:40:31 INFO  InstallerVerQueryExtractExecutor:269 - Caching XMLA queries... 
 2025-11-05 03:40:31 INFO  QueryHistoryFileUtil:85 - Caching XMLA queries for model Internet Sales Cube - Postgres to file: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
 2025-11-05 03:40:32 INFO  InstallerVerQueryExtractExecutor:108 - QueryExtractExecutor finished. 
+2025-11-05 15:35:00 WARN  PropertiesManager:55 - External config file not found: /app/systems.properties, falling back to classpath 
+2025-11-05 15:38:52 INFO  PropertiesManager:39 - Loading properties from external config: /app/target/classes/systems.properties 
+2025-11-05 15:38:52 INFO  PropertiesManager:43 - Successfully loaded 32 properties from external config 
+2025-11-05 15:38:52 INFO  PropertiesManager:111 - AtScale models loaded: [ASAdventureSmall, Internet Sales Cube - Postgres] 
+2025-11-05 15:38:52 INFO  InstallerVerQueryExtractExecutor:75 - QueryExtractExecutor started. 
+2025-11-05 15:38:52 INFO  PropertiesManager:111 - AtScale models loaded: [ASAdventureSmall, Internet Sales Cube - Postgres] 
+2025-11-05 15:38:52 INFO  InstallerVerQueryExtractExecutor:80 - Processing model: ASAdventureSmall 
+2025-11-05 15:38:52 INFO  InstallerVerQueryExtractExecutor:204 - Caching JDBC queries... 
+2025-11-05 15:38:52 INFO  AtScalePostgresDao:125 - Initializing AtScalePostgresDao with URL: jdbc:postgresql://10.200.1.37:10520/atscale 
+2025-11-05 15:38:52 INFO  AtScalePostgresDao:126 - Database user: atscale 
+2025-11-05 15:38:53 INFO  AtScalePostgresDao:173 - ✅ Database connection test successful 
+2025-11-05 15:38:53 INFO  AtScalePostgresDao:206 - Schema detection - Engine schema: false, Public schema: false 
+2025-11-05 15:38:53 INFO  QueryHistoryFileUtil:82 - Caching JDBC queries for model ASAdventureSmall to file: /app/queries/ASAdventureSmall_jdbc_queries.json 
+2025-11-05 15:38:53 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [sql, ASAdventureSmall] 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:265 - Retrieved 0 query history records with custom query 
+2025-11-05 15:38:54 WARN  AtScalePostgresDao:274 - No results returned from custom query. QueryExtract SQL: 
+    SELECT
+        q.service,
+        q.query_language,
+        q.query_text as inbound_text,
+        MAX(s.subquery_text) as outbound_text,
+        p.cube_name,
+        p.project_id,
+        case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
+        COUNT(*)                             AS num_times,
+        AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
+        AVG(r.result_size)                   AS avg_result_size
+    FROM
+        atscale.queries q
+    INNER JOIN
+        atscale.query_results r
+    ON
+        q.query_id=r.query_id
+    INNER JOIN
+        atscale.queries_planned p
+    ON
+        q.query_id=p.query_id
+    INNER JOIN
+        atscale.subqueries s
+    ON
+        q.query_id=s.query_id
+    WHERE
+        q.query_language = 'sql' AND
+        p.planning_started > current_timestamp - interval '60 day'
+        and p.cube_name = 'ASAdventureSmall'
+        AND q.service = 'user-query'
+        AND r.succeeded = true
+        AND LENGTH(q.query_text) > 100
+        AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
+        AND q.query_text NOT LIKE '-- statement does not return rows%'
+    GROUP BY
+        1, 2, 3, 5, 6
+    ORDER BY 3
+ 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:371 - Checking available models and query languages... 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:376 - Available Model and Query Language combinations: 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: 711CustomDate, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: AtScale Usage, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Enterprise Sales, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: KeyBusPandL, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: NikeInventory, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Warranty20, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: ae4, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: cigna_many2many, Query Language: analysis 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: pgsql 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: pgsql 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: pgsql 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: pgsql 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: pgsql 
+2025-11-05 15:38:54 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: sql 
+2025-11-05 15:38:54 WARN  QueryHistoryFileUtil:90 - Validation error No results returned for the user provided query. 
+java.lang.IllegalArgumentException: No results returned for the user provided query.
+	at com.atscale.java.utils.QueryHistoryFileUtil.validate(QueryHistoryFileUtil.java:111)
+	at com.atscale.java.utils.QueryHistoryFileUtil.cacheJdbcQueries(QueryHistoryFileUtil.java:85)
+	at com.atscale.java.executors.InstallerVerQueryExtractExecutor.cacheJdbcQueries(InstallerVerQueryExtractExecutor.java:264)
+	at com.atscale.java.executors.InstallerVerQueryExtractExecutor.execute(InstallerVerQueryExtractExecutor.java:86)
+	at com.atscale.java.executors.InstallerVerQueryExtractExecutor.main(InstallerVerQueryExtractExecutor.java:21)
+2025-11-05 15:38:55 INFO  InstallerVerQueryExtractExecutor:276 - Caching XMLA queries... 
+2025-11-05 15:38:55 INFO  QueryHistoryFileUtil:97 - Caching XMLA queries for model ASAdventureSmall to file: /app/queries/ASAdventureSmall_xmla_queries.json 
+2025-11-05 15:38:55 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [analysis, ASAdventureSmall] 
+2025-11-05 15:38:55 INFO  AtScalePostgresDao:265 - Retrieved 21 query history records with custom query 
+2025-11-05 15:38:55 INFO  QueryHistoryFileUtil:41 - Successfully wrote 21 queries to: /app/queries/ASAdventureSmall_xmla_queries.json 
+2025-11-05 15:38:55 INFO  InstallerVerQueryExtractExecutor:80 - Processing model: Internet Sales Cube - Postgres 
+2025-11-05 15:38:55 INFO  InstallerVerQueryExtractExecutor:204 - Caching JDBC queries... 
+2025-11-05 15:38:55 INFO  QueryHistoryFileUtil:82 - Caching JDBC queries for model Internet Sales Cube - Postgres to file: /app/queries/Internet Sales Cube - Postgres_jdbc_queries.json 
+2025-11-05 15:38:55 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [sql, Internet Sales Cube - Postgres] 
+2025-11-05 15:38:56 INFO  AtScalePostgresDao:265 - Retrieved 1 query history records with custom query 
+2025-11-05 15:38:56 INFO  QueryHistoryFileUtil:41 - Successfully wrote 1 queries to: /app/queries/Internet Sales Cube - Postgres_jdbc_queries.json 
+2025-11-05 15:38:56 INFO  InstallerVerQueryExtractExecutor:276 - Caching XMLA queries... 
+2025-11-05 15:38:56 INFO  QueryHistoryFileUtil:97 - Caching XMLA queries for model Internet Sales Cube - Postgres to file: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
+2025-11-05 15:38:56 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [analysis, Internet Sales Cube - Postgres] 
+2025-11-05 15:38:56 INFO  AtScalePostgresDao:265 - Retrieved 13 query history records with custom query 
+2025-11-05 15:38:56 INFO  QueryHistoryFileUtil:41 - Successfully wrote 13 queries to: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
+2025-11-05 15:38:56 INFO  InstallerVerQueryExtractExecutor:115 - QueryExtractExecutor finished. 
+2025-11-05 15:39:49 INFO  QueryExtractExecutor:21 - QueryExtractExecutor started. 
+2025-11-05 15:39:49 INFO  PropertiesManager:39 - Loading properties from external config: /app/target/classes/systems.properties 
+2025-11-05 15:39:49 INFO  PropertiesManager:43 - Successfully loaded 32 properties from external config 
+2025-11-05 15:39:49 WARN  QueryExtractExecutor:44 - AWS region or secret-key property not found. Skipping loading additional properties from AWS Secrets Manager. 
+2025-11-05 15:39:49 INFO  PropertiesManager:111 - AtScale models loaded: [ASAdventureSmall, Internet Sales Cube - Postgres] 
+2025-11-05 15:39:49 INFO  AtScalePostgresDao:125 - Initializing AtScalePostgresDao with URL: jdbc:postgresql://10.200.1.37:10520/atscale 
+2025-11-05 15:39:49 INFO  AtScalePostgresDao:126 - Database user: atscale 
+2025-11-05 15:39:50 INFO  AtScalePostgresDao:173 - ✅ Database connection test successful 
+2025-11-05 15:39:50 INFO  AtScalePostgresDao:206 - Schema detection - Engine schema: false, Public schema: false 
+2025-11-05 15:39:50 INFO  AtScalePostgresDao:214 - Getting query history for language: SQL, cube: ASAdventureSmall 
+2025-11-05 15:39:50 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:232 - Retrieved 6 query history records 
+2025-11-05 15:39:51 INFO  QueryHistoryFileUtil:41 - Successfully wrote 6 queries to: /app/queries/ASAdventureSmall_jdbc_queries.json 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:214 - Getting query history for language: XMLA, cube: ASAdventureSmall 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:232 - Retrieved 21 query history records 
+2025-11-05 15:39:51 INFO  QueryHistoryFileUtil:41 - Successfully wrote 21 queries to: /app/queries/ASAdventureSmall_xmla_queries.json 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:214 - Getting query history for language: SQL, cube: Internet Sales Cube - Postgres 
+2025-11-05 15:39:51 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:232 - Retrieved 0 query history records 
+2025-11-05 15:39:52 WARN  AtScalePostgresDao:241 - No results returned from the query. QueryExtract SQL: 
+        SELECT
+                    q.service,
+                    q.query_language,
+                    q.query_text as inbound_text,
+                    MAX(s.subquery_text) as outbound_text,
+                    p.cube_name,
+                    p.project_id,
+                    case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
+                    COUNT(*)                             AS num_times,
+                    AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
+                    AVG(r.result_size)                   AS avg_result_size
+                FROM
+                    atscale.queries q
+                INNER JOIN
+                    atscale.query_results r
+                ON
+                    q.query_id=r.query_id
+                INNER JOIN
+                    atscale.queries_planned p
+                ON
+                    q.query_id=p.query_id
+                INNER JOIN
+                    atscale.subqueries s
+                ON
+                    q.query_id=s.query_id
+                WHERE
+                    q.query_language = 'pgsql'
+                AND p.planning_started > current_timestamp - interval '60 day'
+                and p.cube_name = 'Internet Sales Cube - Postgres'
+                AND q.service = 'user-query'
+                AND r.succeeded = true
+                AND LENGTH(q.query_text) > 100
+                AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
+                AND q.query_text NOT LIKE '-- statement does not return rows%'
+                GROUP BY
+                    1, 2, 3, 5, 6
+                HAVING COUNT(*) >= 1
+                ORDER BY 3
+ 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:371 - Checking available models and query languages... 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:376 - Available Model and Query Language combinations: 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: 711CustomDate, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: AtScale Usage, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Enterprise Sales, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: KeyBusPandL, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: NikeInventory, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Warranty20, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: ae4, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: cigna_many2many, Query Language: analysis 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: pgsql 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: pgsql 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: pgsql 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: pgsql 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: pgsql 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: sql 
+2025-11-05 15:39:52 INFO  QueryHistoryFileUtil:41 - Successfully wrote 0 queries to: /app/queries/Internet Sales Cube - Postgres_jdbc_queries.json 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:214 - Getting query history for language: XMLA, cube: Internet Sales Cube - Postgres 
+2025-11-05 15:39:52 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:39:53 INFO  AtScalePostgresDao:232 - Retrieved 13 query history records 
+2025-11-05 15:39:53 INFO  QueryHistoryFileUtil:41 - Successfully wrote 13 queries to: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
+2025-11-05 15:39:53 INFO  QueryExtractExecutor:31 - QueryExtractExecutor finished. 
+2025-11-05 15:40:16 INFO  QueryExtractExecutor:21 - QueryExtractExecutor started. 
+2025-11-05 15:40:16 INFO  PropertiesManager:39 - Loading properties from external config: /app/target/classes/systems.properties 
+2025-11-05 15:40:16 INFO  PropertiesManager:43 - Successfully loaded 32 properties from external config 
+2025-11-05 15:40:16 WARN  QueryExtractExecutor:44 - AWS region or secret-key property not found. Skipping loading additional properties from AWS Secrets Manager. 
+2025-11-05 15:40:16 INFO  PropertiesManager:111 - AtScale models loaded: [ASAdventureSmall, Internet Sales Cube - Postgres] 
+2025-11-05 15:40:16 INFO  AtScalePostgresDao:125 - Initializing AtScalePostgresDao with URL: jdbc:postgresql://10.200.1.37:10520/atscale 
+2025-11-05 15:40:16 INFO  AtScalePostgresDao:126 - Database user: atscale 
+2025-11-05 15:40:17 INFO  AtScalePostgresDao:173 - ✅ Database connection test successful 
+2025-11-05 15:40:17 INFO  AtScalePostgresDao:206 - Schema detection - Engine schema: false, Public schema: false 
+2025-11-05 15:40:17 INFO  AtScalePostgresDao:214 - Getting query history for language: SQL, cube: ASAdventureSmall 
+2025-11-05 15:40:17 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:40:18 INFO  AtScalePostgresDao:232 - Retrieved 6 query history records 
+2025-11-05 15:40:18 INFO  QueryHistoryFileUtil:41 - Successfully wrote 6 queries to: /app/queries/ASAdventureSmall_jdbc_queries.json 
+2025-11-05 15:40:18 INFO  AtScalePostgresDao:214 - Getting query history for language: XMLA, cube: ASAdventureSmall 
+2025-11-05 15:40:18 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:232 - Retrieved 21 query history records 
+2025-11-05 15:40:19 INFO  QueryHistoryFileUtil:41 - Successfully wrote 21 queries to: /app/queries/ASAdventureSmall_xmla_queries.json 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:214 - Getting query history for language: SQL, cube: Internet Sales Cube - Postgres 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:232 - Retrieved 0 query history records 
+2025-11-05 15:40:19 WARN  AtScalePostgresDao:241 - No results returned from the query. QueryExtract SQL: 
+        SELECT
+                    q.service,
+                    q.query_language,
+                    q.query_text as inbound_text,
+                    MAX(s.subquery_text) as outbound_text,
+                    p.cube_name,
+                    p.project_id,
+                    case when MAX(s.subquery_text) like '%as_agg_%' then true else false end as used_agg,
+                    COUNT(*)                             AS num_times,
+                    AVG(r.finished - p.planning_started) AS elasped_time_in_seconds,
+                    AVG(r.result_size)                   AS avg_result_size
+                FROM
+                    atscale.queries q
+                INNER JOIN
+                    atscale.query_results r
+                ON
+                    q.query_id=r.query_id
+                INNER JOIN
+                    atscale.queries_planned p
+                ON
+                    q.query_id=p.query_id
+                INNER JOIN
+                    atscale.subqueries s
+                ON
+                    q.query_id=s.query_id
+                WHERE
+                    q.query_language = 'pgsql'
+                AND p.planning_started > current_timestamp - interval '60 day'
+                and p.cube_name = 'Internet Sales Cube - Postgres'
+                AND q.service = 'user-query'
+                AND r.succeeded = true
+                AND LENGTH(q.query_text) > 100
+                AND q.query_text NOT LIKE '/* Virtual query to get the members of a level */%'
+                AND q.query_text NOT LIKE '-- statement does not return rows%'
+                GROUP BY
+                    1, 2, 3, 5, 6
+                HAVING COUNT(*) >= 1
+                ORDER BY 3
+ 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:371 - Checking available models and query languages... 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:376 - Available Model and Query Language combinations: 
+2025-11-05 15:40:19 INFO  AtScalePostgresDao:381 -   - Model: 711CustomDate, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: AtScale Usage, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Enterprise Sales, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: KeyBusPandL, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: NikeInventory, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Warranty20, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: ae4, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: cigna_many2many, Query Language: analysis 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: ASAdventureSmall, Query Language: pgsql 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube, Query Language: pgsql 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: pgsql 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: NikeProdSeason, Query Language: pgsql 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: ae3-inventory, Query Language: pgsql 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:381 -   - Model: Internet Sales Cube - Postgres, Query Language: sql 
+2025-11-05 15:40:20 INFO  QueryHistoryFileUtil:41 - Successfully wrote 0 queries to: /app/queries/Internet Sales Cube - Postgres_jdbc_queries.json 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:214 - Getting query history for language: XMLA, cube: Internet Sales Cube - Postgres 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:290 - Using INSTALLER schema query (atscale.* tables) 
+2025-11-05 15:40:20 INFO  AtScalePostgresDao:232 - Retrieved 13 query history records 
+2025-11-05 15:40:20 INFO  QueryHistoryFileUtil:41 - Successfully wrote 13 queries to: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
+2025-11-05 15:40:20 INFO  QueryExtractExecutor:31 - QueryExtractExecutor finished. 
+2025-11-05 15:40:43 INFO  OpenStepSequentialSimulationExecutor:17 - SequentialSimulationExecutor started. 
+2025-11-05 15:40:43 INFO  PropertiesManager:39 - Loading properties from external config: /app/target/classes/systems.properties 
+2025-11-05 15:40:43 INFO  PropertiesManager:43 - Successfully loaded 32 properties from external config 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:28 - OS is linux 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:29 - Running task: Internet Sales XMLA Simulation 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:30 - Maven Command: gatling:test 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:31 - Simulation Class: com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:32 - Run Description: Internet Sales XMLA Model Tests 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:83 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales XMLA Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1qclJyWkhVa3d2, -Dgatling_run_logFileName=internet_sales_xmla.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=aW50ZXJuZXRfc2FsZXNfeG1sYV9xdWVyaWVzLmNzdg==, -Dquery_ingestion_file_has_header=true, -Dadditional_properties=e30=, gatling:test] 
+2025-11-05 15:40:43 INFO  SequentialSimulationExecutor:99 - Run Log Path: /app/run_logs 
+2025-11-05 15:41:03 INFO  ClosedStepConcurrentSimulationExecutor:15 - ConcurrentSimulationExecutor started. 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales JDBC User Simulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:32 - Running task: TPC-DS JDBC Stepped User Simulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleClosedInjectionStepSimulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleClosedInjectionStepSimulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales JDBC Model Tests 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:35 - Run Description: TPCDS JDBC Model Tests 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales XMLA Stepped User Simulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.xmla.simulations.AtScaleXmlaClosedInjectionStepSimulation 
+2025-11-05 15:41:03 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales XMLA Model Tests 
+2025-11-05 15:41:04 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleClosedInjectionStepSimulation, -Dgatling.runDescription=TPCDS JDBC Model Tests, -Datscale.model=dHBjZHNfYmVuY2htYXJrX21vZGVs, -Datscale.run.id=MjAyNS0xMS0wNS1YMUMyOHJMaDZX, -Dgatling_run_logFileName=tpcds_jdbc.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3siaW5pdGlhbFVzZXJzIjoxLCJhZGRpdGlvbmFsVXNlcnMiOjMsInRpbWVzIjoxLCJsZXZlbER1cmF0aW9uTWludXRlcyI6MSwicmFtcER1cmF0aW9uTWludXRlcyI6MSwidHlwZSI6IkluY3JlbWVudENvbmN1cnJlbnRVc2Vyc0Nsb3NlZEluamVjdGlvblN0ZXAifV0=, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:04 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.xmla.simulations.AtScaleXmlaClosedInjectionStepSimulation, -Dgatling.runDescription=Internet Sales XMLA Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1OT1ljZHk4cUdz, -Dgatling_run_logFileName=internet_sales_xmla.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3siaW5pdGlhbFVzZXJzIjoxLCJhZGRpdGlvbmFsVXNlcnMiOjMsInRpbWVzIjoxLCJsZXZlbER1cmF0aW9uTWludXRlcyI6MSwicmFtcER1cmF0aW9uTWludXRlcyI6MSwidHlwZSI6IkluY3JlbWVudENvbmN1cnJlbnRVc2Vyc0Nsb3NlZEluamVjdGlvblN0ZXAifV0=, -Dquery_ingestion_file=aW50ZXJuZXRfc2FsZXNfeG1sYV9xdWVyaWVzLmNzdg==, -Dquery_ingestion_file_has_header=true, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:04 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleClosedInjectionStepSimulation, -Dgatling.runDescription=Internet Sales JDBC Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1ZMlZrbnZRaTVO, -Dgatling_run_logFileName=internet_sales_jdbc.log, -Dgatling_run_logAppend=false, -Datscale.gatling.injection.steps=W3siaW5pdGlhbFVzZXJzIjoxLCJhZGRpdGlvbmFsVXNlcnMiOjMsInRpbWVzIjoxLCJsZXZlbER1cmF0aW9uTWludXRlcyI6MSwicmFtcER1cmF0aW9uTWludXRlcyI6MSwidHlwZSI6IkluY3JlbWVudENvbmN1cnJlbnRVc2Vyc0Nsb3NlZEluamVjdGlvblN0ZXAifV0=, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:04 INFO  ConcurrentSimulationExecutor:110 - Run Log Path: /app/run_logs 
+2025-11-05 15:41:04 INFO  ClosedStepConcurrentSimulationExecutor:19 - ConcurrentSimulationExecutor completed. 
+2025-11-05 15:41:20 INFO  OpenStepConcurrentSimulationExecutor:13 - ConcurrentSimulationExecutor started. 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales JDBC Simulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:32 - Running task: TPC-DS JDBC Simulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales XMLA Simulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:35 - Run Description: TPCDS JDBC Model Tests 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales JDBC Model Tests 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales XMLA Model Tests 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales JDBC Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1JdnZLSjBlREVp, -Dgatling_run_logFileName=internet_sales_jdbc.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation, -Dgatling.runDescription=TPCDS JDBC Model Tests, -Datscale.model=dHBjZHNfYmVuY2htYXJrX21vZGVs, -Datscale.run.id=MjAyNS0xMS0wNS1yQU91Q1JtVkxR, -Dgatling_run_logFileName=tpcds_benchmark_jdbc.log, -Dgatling_run_logAppend=false, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales XMLA Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1qdXF5TlBMWHc3, -Dgatling_run_logFileName=internet_sales_xmla.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:41:20 INFO  ConcurrentSimulationExecutor:110 - Run Log Path: /app/run_logs 
+2025-11-05 15:41:20 INFO  OpenStepConcurrentSimulationExecutor:17 - ConcurrentSimulationExecutor completed. 
+2025-11-05 15:44:05 INFO  OpenStepConcurrentSimulationExecutor:13 - ConcurrentSimulationExecutor started. 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:31 - OS is linux 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales XMLA Simulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:32 - Running task: Internet Sales JDBC Simulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:32 - Running task: TPC-DS JDBC Simulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:33 - Maven Command: gatling:test 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:35 - Run Description: TPCDS JDBC Model Tests 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:34 - Simulation Class: com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales XMLA Model Tests 
+2025-11-05 15:44:05 INFO  ConcurrentSimulationExecutor:35 - Run Description: Internet Sales JDBC Model Tests 
+2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales JDBC Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1vc3FYM2dyZ0k4, -Dgatling_run_logFileName=internet_sales_jdbc.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.jdbc.simulations.AtScaleOpenInjectionStepSimulation, -Dgatling.runDescription=TPCDS JDBC Model Tests, -Datscale.model=dHBjZHNfYmVuY2htYXJrX21vZGVs, -Datscale.run.id=MjAyNS0xMS0wNS1iSm9vU0ZoQVVv, -Dgatling_run_logFileName=tpcds_benchmark_jdbc.log, -Dgatling_run_logAppend=false, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales XMLA Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1nbU4xeU1xTFBG, -Dgatling_run_logFileName=internet_sales_xmla.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
+2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:110 - Run Log Path: /app/run_logs 
+2025-11-05 15:44:06 INFO  OpenStepConcurrentSimulationExecutor:17 - ConcurrentSimulationExecutor completed. 
