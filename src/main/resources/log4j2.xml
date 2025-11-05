@@ -3,14 +3,17 @@
     <Properties>
         <Property name="simulation_logFileName">${sys:gatling_run_logFileName:-init.log}</Property>
         <Property name="simulation_logAppend">${sys:gatling_run_logAppend:-false}</Property>
-        <!-- Add base directory property -->
-        <Property name="baseLogDir">/app</Property>
+        <!-- Base directory comes from env var APP_HOME, falls back to current dir -->
+        <Property name="baseLogDir">${env:APP_HOME:-.}</Property>
     </Properties>
+
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m %n"/>
         </Console>
-        <RollingFile name="APP_LOG" fileName="${baseLogDir}/app_logs/application.log"
+
+        <RollingFile name="APP_LOG"
+                     fileName="${baseLogDir}/app_logs/application.log"
                      filePattern="${baseLogDir}/app_logs/application-%d{yyyy-MM-dd}.%i.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m %n"/>
             <Policies>
@@ -23,18 +26,25 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
+
         <Async name="ASYNC_APP_LOG" bufferSize="250" shutdownTimeout="10000">
             <AppenderRef ref="APP_LOG"/>
             <Blocking>true</Blocking>
         </Async>
-        <File name="SQL" fileName="${baseLogDir}/run_logs/${simulation_logFileName}" append="${simulation_logAppend}">
+
+        <File name="SQL"
+              fileName="${baseLogDir}/run_logs/${simulation_logFileName}"
+              append="${simulation_logAppend}">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m %n"/>
         </File>
         <Async name="ASYNC_SQL" bufferSize="250" shutdownTimeout="10000">
             <AppenderRef ref="SQL"/>
             <Blocking>true</Blocking>
         </Async>
-        <File name="XMLA" fileName="${baseLogDir}/run_logs/${simulation_logFileName}" append="${simulation_logAppend}">
+
+        <File name="XMLA"
+              fileName="${baseLogDir}/run_logs/${simulation_logFileName}"
+              append="${simulation_logAppend}">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m %n"/>
         </File>
         <Async name="ASYNC_XMLA" bufferSize="250" shutdownTimeout="10000">
@@ -42,6 +52,7 @@
             <Blocking>true</Blocking>
         </Async>
     </Appenders>
+
     <Loggers>
         <Root level="info">
             <AppenderRef ref="STDOUT"/>

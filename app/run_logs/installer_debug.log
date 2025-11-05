@@ -1,0 +1,23 @@
+=== InstallerVerQueryExtractExecutor Starting ===
+Properties loaded successfully, checking models...
+Models found: [AdventureWorksDW2012Multidimensional-EE, Sales_Insights_-_Postgres]
+Processing model: AdventureWorksDW2012Multidimensional-EE
+  JDBC URL: jdbc:postgresql://10.200.1.37:15432/AdventureWorksDW2012Multidimensional-EE
+  JDBC User: admin
+  XMLA URL: https://10.200.1.37:10502/xmla/default/37022d31-a848-4e89-71de-7047cc69ee77
+Processing model: Sales_Insights_-_Postgres
+  JDBC URL: jdbc:postgresql://10.200.1.37:15432/Sales%20Insights%20-%20Postgres
+  JDBC User: admin
+  XMLA URL: https://10.200.1.37:10502/xmla/default/37022d31-a848-4e89-71de-7047cc69ee77
+QueryExtractExecutor started.
+Processing model: AdventureWorksDW2012Multidimensional-EE
+Starting JDBC query caching for model: AdventureWorksDW2012Multidimensional-EE
+JDBC query caching completed for model: AdventureWorksDW2012Multidimensional-EE
+Starting XMLA query caching for model: AdventureWorksDW2012Multidimensional-EE
+XMLA query caching completed for model: AdventureWorksDW2012Multidimensional-EE
+Processing model: Sales_Insights_-_Postgres
+Starting JDBC query caching for model: Sales_Insights_-_Postgres
+JDBC query caching completed for model: Sales_Insights_-_Postgres
+Starting XMLA query caching for model: Sales_Insights_-_Postgres
+XMLA query caching completed for model: Sales_Insights_-_Postgres
+=== InstallerVerQueryExtractExecutor Finished ===

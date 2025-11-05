@@ -18,9 +18,13 @@ import org.slf4j.LoggerFactory;
 public class QueryHistoryFileUtil {
     private final Logger LOGGER = LoggerFactory.getLogger(QueryHistoryFileUtil.class);
     private final AtScalePostgresDao dao;
-    
+        // Resolve APP_HOME from system property or environment, default to "."
+    private static final String APP_HOME =
+            System.getProperty("app.home",
+                    System.getenv().getOrDefault("APP_HOME", "."));
+
     // FIXED: Use Docker path instead of user.dir
-    private static final String QUERIES_DIR = "/app/queries";
+    private static final String QUERIES_DIR = APP_HOME + "/queries";
 
     public QueryHistoryFileUtil(AtScalePostgresDao dao) {
         this.dao = dao;

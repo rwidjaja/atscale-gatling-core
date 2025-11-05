@@ -14,7 +14,12 @@ import java.util.List;
 
 public class InstallerVerQueryExtractExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallerVerQueryExtractExecutor.class);
-    private static final String QUERIES_DIR = "/app/queries";
+        // Resolve APP_HOME from system property or environment, default to "."
+    private static final String APP_HOME =
+            System.getProperty("app.home",
+                    System.getenv().getOrDefault("APP_HOME", "."));
+
+    private static final String QUERIES_DIR = APP_HOME + "/queries";
 
     public static void main(String[] args) {
         InstallerVerQueryExtractExecutor executor = new InstallerVerQueryExtractExecutor();
@@ -117,7 +122,7 @@ public class InstallerVerQueryExtractExecutor {
     }
     
     private void writeDebugFile(String content) {
-        String debugFilePath = "/app/run_logs/installer_debug.log";
+        String debugFilePath = APP_HOME + "/run_logs/installer_debug.log";
         
         try {
             Path path = Paths.get(debugFilePath);

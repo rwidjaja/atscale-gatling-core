@@ -433,3 +433,91 @@ java.lang.IllegalArgumentException: No results returned for the user provided qu
 2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:82 - Starting the test suite on a separate JVM.  Using command args: [./mvnw, -Dgatling.simulationClass=com.atscale.java.xmla.simulations.AtScaleXmlaOpenInjectionStepSimulation, -Dgatling.runDescription=Internet Sales XMLA Model Tests, -Datscale.model=aW50ZXJuZXRfc2FsZXM=, -Datscale.run.id=MjAyNS0xMS0wNS1nbU4xeU1xTFBG, -Dgatling_run_logFileName=internet_sales_xmla.log, -Dgatling_run_logAppend=true, -Datscale.gatling.injection.steps=W3sidXNlcnMiOjEsInR5cGUiOiJBdE9uY2VVc2Vyc09wZW5JbmplY3Rpb25TdGVwIn1d, -Dquery_ingestion_file=null, -Dquery_ingestion_file_has_header=false, -Dadditional_properties=null, gatling:test] 
 2025-11-05 15:44:06 INFO  ConcurrentSimulationExecutor:110 - Run Log Path: /app/run_logs 
 2025-11-05 15:44:06 INFO  OpenStepConcurrentSimulationExecutor:17 - ConcurrentSimulationExecutor completed. 
+2025-11-05 15:56:33 INFO  PropertiesManager:39 - Loading properties from external config: /app/target/classes/systems.properties 
+2025-11-05 15:56:33 INFO  PropertiesManager:43 - Successfully loaded 32 properties from external config 
+2025-11-05 15:56:33 WARN  CustomQueryExtractExecutor:170 - AWS region or secret-key property not found. Skipping loading additional properties from AWS Secrets Manager. 
+2025-11-05 15:56:33 INFO  CustomQueryExtractExecutor:23 - QueryExtractExecutor started. 
+2025-11-05 15:56:33 INFO  PropertiesManager:111 - AtScale models loaded: [ASAdventureSmall, Internet Sales Cube - Postgres] 
+2025-11-05 15:56:33 INFO  CustomQueryExtractExecutor:27 - Processing model: ASAdventureSmall 
+2025-11-05 15:56:33 INFO  CustomQueryExtractExecutor:46 - Caching JDBC queries... 
+2025-11-05 15:56:33 INFO  AtScalePostgresDao:125 - Initializing AtScalePostgresDao with URL: jdbc:postgresql://10.200.1.37:10520/atscale 
+2025-11-05 15:56:33 INFO  AtScalePostgresDao:126 - Database user: atscale 
+2025-11-05 15:56:33 INFO  AtScalePostgresDao:173 - ✅ Database connection test successful 
+2025-11-05 15:56:34 INFO  AtScalePostgresDao:206 - Schema detection - Engine schema: false, Public schema: false 
+2025-11-05 15:56:34 INFO  QueryHistoryFileUtil:82 - Caching JDBC queries for model ASAdventureSmall to file: /app/queries/ASAdventureSmall_jdbc_queries.json 
+2025-11-05 15:56:34 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [pgsql, ASAdventureSmall] 
+2025-11-05 15:56:34 ERROR AtScalePostgresDao:268 - Error executing custom query history extraction 
+org.postgresql.util.PSQLException: ERROR: relation "engine.queries" does not exist
+  Position: 534
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2725)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2412)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:137)
+	at com.atscale.java.dao.AtScalePostgresDao.getQueryHistory(AtScalePostgresDao.java:261)
+	at com.atscale.java.utils.QueryHistoryFileUtil.cacheJdbcQueries(QueryHistoryFileUtil.java:84)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.cacheJdbcQueries(CustomQueryExtractExecutor.java:99)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.execute(CustomQueryExtractExecutor.java:29)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.main(CustomQueryExtractExecutor.java:19)
+2025-11-05 15:56:34 ERROR CustomQueryExtractExecutor:31 - Error caching JDBC queries for model ASAdventureSmall: Error fetching query history from the AtScale Postgres database. 
+2025-11-05 15:56:34 INFO  CustomQueryExtractExecutor:105 - Caching XMLA queries... 
+2025-11-05 15:56:34 INFO  QueryHistoryFileUtil:97 - Caching XMLA queries for model ASAdventureSmall to file: /app/queries/ASAdventureSmall_xmla_queries.json 
+2025-11-05 15:56:34 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [analysis, ASAdventureSmall] 
+2025-11-05 15:56:35 ERROR AtScalePostgresDao:268 - Error executing custom query history extraction 
+org.postgresql.util.PSQLException: ERROR: relation "engine.queries" does not exist
+  Position: 534
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2725)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2412)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:137)
+	at com.atscale.java.dao.AtScalePostgresDao.getQueryHistory(AtScalePostgresDao.java:261)
+	at com.atscale.java.utils.QueryHistoryFileUtil.cacheXmlaQueries(QueryHistoryFileUtil.java:99)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.cacheXmlaQueries(CustomQueryExtractExecutor.java:158)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.execute(CustomQueryExtractExecutor.java:34)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.main(CustomQueryExtractExecutor.java:19)
+2025-11-05 15:56:35 ERROR CustomQueryExtractExecutor:36 - Error caching XMLA queries for model ASAdventureSmall: Error fetching query history from the AtScale Postgres database. 
+2025-11-05 15:56:35 INFO  CustomQueryExtractExecutor:27 - Processing model: Internet Sales Cube - Postgres 
+2025-11-05 15:56:35 INFO  CustomQueryExtractExecutor:46 - Caching JDBC queries... 
+2025-11-05 15:56:35 INFO  QueryHistoryFileUtil:82 - Caching JDBC queries for model Internet Sales Cube - Postgres to file: /app/queries/Internet Sales Cube - Postgres_jdbc_queries.json 
+2025-11-05 15:56:35 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [pgsql, Internet Sales Cube - Postgres] 
+2025-11-05 15:56:35 ERROR AtScalePostgresDao:268 - Error executing custom query history extraction 
+org.postgresql.util.PSQLException: ERROR: relation "engine.queries" does not exist
+  Position: 534
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2725)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2412)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:137)
+	at com.atscale.java.dao.AtScalePostgresDao.getQueryHistory(AtScalePostgresDao.java:261)
+	at com.atscale.java.utils.QueryHistoryFileUtil.cacheJdbcQueries(QueryHistoryFileUtil.java:84)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.cacheJdbcQueries(CustomQueryExtractExecutor.java:99)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.execute(CustomQueryExtractExecutor.java:29)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.main(CustomQueryExtractExecutor.java:19)
+2025-11-05 15:56:35 ERROR CustomQueryExtractExecutor:31 - Error caching JDBC queries for model Internet Sales Cube - Postgres: Error fetching query history from the AtScale Postgres database. 
+2025-11-05 15:56:35 INFO  CustomQueryExtractExecutor:105 - Caching XMLA queries... 
+2025-11-05 15:56:35 INFO  QueryHistoryFileUtil:97 - Caching XMLA queries for model Internet Sales Cube - Postgres to file: /app/queries/Internet Sales Cube - Postgres_xmla_queries.json 
+2025-11-05 15:56:35 INFO  AtScalePostgresDao:249 - Getting query history with custom query, params: [analysis, Internet Sales Cube - Postgres] 
+2025-11-05 15:56:35 ERROR AtScalePostgresDao:268 - Error executing custom query history extraction 
+org.postgresql.util.PSQLException: ERROR: relation "engine.queries" does not exist
+  Position: 534
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2725)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2412)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:137)
+	at com.atscale.java.dao.AtScalePostgresDao.getQueryHistory(AtScalePostgresDao.java:261)
+	at com.atscale.java.utils.QueryHistoryFileUtil.cacheXmlaQueries(QueryHistoryFileUtil.java:99)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.cacheXmlaQueries(CustomQueryExtractExecutor.java:158)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.execute(CustomQueryExtractExecutor.java:34)
+	at com.atscale.java.executors.CustomQueryExtractExecutor.main(CustomQueryExtractExecutor.java:19)
+2025-11-05 15:56:35 ERROR CustomQueryExtractExecutor:36 - Error caching XMLA queries for model Internet Sales Cube - Postgres: Error fetching query history from the AtScale Postgres database. 
+2025-11-05 15:56:35 INFO  CustomQueryExtractExecutor:39 - QueryExtractExecutor finished. 
