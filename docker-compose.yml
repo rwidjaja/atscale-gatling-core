@@ -6,6 +6,8 @@ services:
     image: rwidjaja/atscale-gatling:latest
     platform: linux/amd64
     env_file: .env
+    environment:
+      - APP_HOME=/app  # Add this line
     volumes:
       - ./working_dir/config/systems.properties:/app/target/classes/systems.properties:ro
       - ./working_dir/run_logs:/app/run_logs
