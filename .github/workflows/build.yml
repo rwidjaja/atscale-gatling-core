@@ -2,8 +2,8 @@ name: Build and Deploy to Maven Central
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["main"]
+#   push:
+#     branches: ["main"]
 
 jobs:
   build:
