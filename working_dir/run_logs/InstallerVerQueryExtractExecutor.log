@@ -1,0 +1,30 @@
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 1 modules
+[INFO] Installing Central Publishing features
+[INFO] 
+[INFO] ------------< com.atscale.opensource:atscale-gatling-core >-------------
+[INFO] Building atscale_gatling 1.7
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec:3.3.0:java (default-cli) @ atscale-gatling-core ---
+[WARNING] 
+java.lang.ClassNotFoundException: executors.InstallerVerQueryExtractExecutor
+    at org.codehaus.mojo.exec.URLClassLoaderBuilder$ExecJavaClassLoader.loadClass (URLClassLoaderBuilder.java:181)
+    at java.lang.ClassLoader.loadClass (ClassLoader.java:525)
+    at org.codehaus.mojo.exec.ExecJavaMojo.doExec (ExecJavaMojo.java:371)
+    at org.codehaus.mojo.exec.ExecJavaMojo.lambda$execute$0 (ExecJavaMojo.java:296)
+    at java.lang.Thread.run (Thread.java:1570)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.374 s
+[INFO] Finished at: 2025-11-21T14:00:31-06:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.codehaus.mojo:exec-maven-plugin:3.3.0:java (default-cli) on project atscale-gatling-core: An exception occurred while executing the Java class. executors.InstallerVerQueryExtractExecutor -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
